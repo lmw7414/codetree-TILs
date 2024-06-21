@@ -52,7 +52,7 @@ public class Main {
         int dCnt = 0;
         while(true) {
             if(dCnt == 4) {
-                // 후진 가능하다면 dCnt 0, answer++ 변경 후 이동
+                // 후진 가능하다면 dCnt=0 변경 후 이동
                 int nx = car.x + dx[(car.dir + 2) % 4];
                 int ny = car.y + dy[(car.dir + 2) % 4];
                 if(arr[nx][ny] != 1) {
