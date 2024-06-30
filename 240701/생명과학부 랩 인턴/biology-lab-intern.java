@@ -53,7 +53,6 @@ public class Main {
             molds[i] = new Mold(x, y, s, d, b);
             arr[x][y] = i;
         }
-        //printArr(arr);
         calc();
         System.out.println(answer);
 
@@ -147,7 +146,8 @@ public class Main {
 
             this.x = x;
             this.y = y;
-            this.s = s % (2 * (m - 1));
+            if(d % 2 == 0) this.s = s % (2 * (n - 1));
+            else this.s = s % (2 * (m - 1));
             this.d = d;
             this.b = b;
         }
