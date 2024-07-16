@@ -37,14 +37,13 @@ import java.util.*;
   - 몬스터 복제
   - 몬스터 이동
 4. 팩맨이 이동할 방향 선택
-  - 몬스터 3마리 전부 먹는 것이 베스트
   - DFS로 최적 경로 탐색
 */
 
 public class Main {
     static int m, t, r, c;
-    static List<Monster> monsters = new LinkedList<>();  // 몬스터
-    static List<Monster> carcasses = new LinkedList<>(); // 사체
+    static Queue<Monster> monsters = new ArrayDeque<>();  // 몬스터
+    static Queue<Monster> carcasses = new ArrayDeque<>(); // 사체
     static Queue<Monster> eggs = new LinkedList<>();     // 알
 
     static int[][] board = new int[4][4];                // 몬스터
@@ -167,23 +166,17 @@ public class Main {
 
     public static void toCarcass(int fx, int fy, int sx, int sy, int tx, int ty) {
         Queue<Monster> monsterQueue = new ArrayDeque<>();
-        monsterQueue.addAll(monsters);
-        monsters.clear();
-        while (!monsterQueue.isEmpty()) {
-            Monster monster = monsterQueue.poll();
-            if (
-                    (monster.x == fx && monster.y == fy) ||
-                            (monster.x == sx && monster.y == sy) ||
-                            (monster.x == tx && monster.y == ty)
-            ) {
+        while (!monsters.isEmpty()) {
+            Monster monster = monsters.poll();
+            if ((monster.x == fx && monster.y == fy) || (monster.x == sx && monster.y == sy) || (monster.x == tx && monster.y == ty)) {
                 board[monster.x][monster.y]--;
                 carcass[monster.x][monster.y]++;
                 carcasses.add(monster);
-                monsters.remove(monster);
             } else {
-                monsters.add(monster);
+                monsterQueue.add(monster);
             }
         }
+        monsters = monsterQueue;
     }
 
     public static int findMonster(int fx, int fy, int sx, int sy, int tx, int ty) {
@@ -208,17 +201,16 @@ public class Main {
     // 몬스터 사체 소멸
     public static void extinction() {
         Queue<Monster> carcessQueue = new ArrayDeque<>();
-        carcessQueue.addAll(carcasses);
-        carcasses.clear();
-        while (!carcessQueue.isEmpty()) {
-            Monster ca = carcessQueue.poll();
+        while (!carcasses.isEmpty()) {
+            Monster ca = carcasses.poll();
             if (ca.turn < 2) {
                 ca.turn++;
-                carcasses.add(ca);
+                carcessQueue.add(ca);
             } else {
                 carcass[ca.x][ca.y]--;
             }
         }
+        carcasses = carcessQueue;
     }
 
     public static boolean isOutOfRange(int nx, int ny) {
