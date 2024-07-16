@@ -67,7 +67,7 @@ public class Main {
             int x = Integer.parseInt(st.nextToken()) - 1;
             int y = Integer.parseInt(st.nextToken()) - 1;
             int d = Integer.parseInt(st.nextToken()) - 1;
-            monsters.add(new Monster(x, y, 1, d));
+            monsters.add(new Monster(x, y, d));
             board[x][y]++;
         }
         System.out.println(game());
@@ -92,7 +92,7 @@ public class Main {
     // 몬스터 복제
     public static void copyMonster() {
         for (Monster monster : monsters) {
-            eggs.add(new Monster(monster.x, monster.y, 0, monster.dir));
+            eggs.add(monster.layEgg());
         }
     }
 
@@ -106,7 +106,11 @@ public class Main {
             int ny = monster.y + dy[monster.dir];
             int cnt = 0;
             while (!monster.movable(nx, ny)) {
-                if (cnt > 7) break;
+                if (cnt > 7) {
+                    nx = monster.x;
+                    ny = monster.y;
+                    break;
+                }
                 monster.changeDir();
                 nx = monster.x + dx[monster.dir];
                 ny = monster.y + dy[monster.dir];
@@ -174,7 +178,6 @@ public class Main {
             ) {
                 board[monster.x][monster.y]--;
                 carcass[monster.x][monster.y]++;
-                monster.status = -1;
                 carcasses.add(monster);
                 monsters.remove(monster);
             } else {
@@ -204,15 +207,17 @@ public class Main {
 
     // 몬스터 사체 소멸
     public static void extinction() {
-        for (int i = 0; i < carcasses.size(); i++) {
-            if (carcasses.get(i).turn < 2) {
-                carcasses.get(i).turn++;
+        Queue<Monster> carcessQueue = new ArrayDeque<>();
+        carcessQueue.addAll(carcasses);
+        carcasses.clear();
+        while (!carcessQueue.isEmpty()) {
+            Monster ca = carcessQueue.poll();
+            if (ca.turn < 2) {
+                ca.turn++;
+                carcasses.add(ca);
             } else {
-                carcass[carcasses.get(i).x][carcasses.get(i).y]--;
-                carcasses.remove(i);
+                carcass[ca.x][ca.y]--;
             }
-
-
         }
     }
 
@@ -225,7 +230,6 @@ public class Main {
     public static void hatch() {
         while (!eggs.isEmpty()) {
             Monster egg = eggs.poll();
-            egg.status = 1;
             monsters.add(egg);
             board[egg.x][egg.y]++;
         }
@@ -245,20 +249,18 @@ public class Main {
     static class Monster {
         int x;
         int y;
-        int status;  // -1 : 시체, 0: 알, 1: 몬스터
         int dir;  // 최대 8방향
         int turn;  // 시체일 경우에만 필요
 
-        public Monster(int x, int y, int status, int dir) {
+        public Monster(int x, int y, int dir) {
             this.x = x;
             this.y = y;
-            this.status = status;
             this.dir = dir;
             this.turn = 0;
         }
 
         public Monster layEgg() {
-            return new Monster(this.x, this.y, 0, this.dir);
+            return new Monster(this.x, this.y, this.dir);
         }
 
         public boolean movable(int nx, int ny) {
