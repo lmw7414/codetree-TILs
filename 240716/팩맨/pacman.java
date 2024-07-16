@@ -59,8 +59,8 @@ public class Main {
         t = Integer.parseInt(st.nextToken());
 
         st = new StringTokenizer(br.readLine());
-        r = Integer.parseInt(st.nextToken());
-        c = Integer.parseInt(st.nextToken());
+        r = Integer.parseInt(st.nextToken()) - 1;
+        c = Integer.parseInt(st.nextToken()) - 1;
 
         for (int i = 0; i < m; i++) {
             st = new StringTokenizer(br.readLine());
