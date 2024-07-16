@@ -115,7 +115,7 @@ public class Main {
             monster.x = nx;
             monster.y = ny;
 
-            board[monster.x][monster.y]++;
+            board[nx][ny]++;
         }
     }
 
