@@ -49,7 +49,7 @@ public class Main {
 
     static int[][] board = new int[4][4];                // 몬스터
     static int[][] carcass = new int[4][4];              // 사체
-    static int[] dx = {-1, -1, 0, 1, 1, 1, 0, -1};  // 상 좌 하 우(반시계)
+    static int[] dx = {-1, -1, 0, 1, 1, 1, 0, -1};       // 상 좌 하 우(반시계)
     static int[] dy = {0, -1, -1, -1, 0, 1, 1, 1};
 
     public static void main(String[] args) throws IOException {
@@ -106,7 +106,7 @@ public class Main {
             int ny = monster.y + dy[monster.dir];
             int cnt = 0;
             while (!monster.movable(nx, ny)) {
-                if (cnt > 7) return;
+                if (cnt > 7) break;
                 monster.changeDir();
                 nx = monster.x + dx[monster.dir];
                 ny = monster.y + dy[monster.dir];
