@@ -33,6 +33,7 @@ import java.io.*;
 public class Main {
     static int R, C, K;
     static int answer = 0;
+    static int best = 0;
     static int[][] board;
     static int[] dx = {-1, 0, 1, 0}; // 위 오 아 왼 (시계)
     static int[] dy = {0, 1, 0, -1};
@@ -54,6 +55,7 @@ public class Main {
             int c = Integer.parseInt(st.nextToken());
             int d = Integer.parseInt(st.nextToken());
             grs[i] = new GR(c, d);
+            best = 0;
             visit = new boolean[K + 1];
             move(i);
         }
@@ -97,7 +99,8 @@ public class Main {
             grs[idx].x = nx;
             grs[idx].y = ny;
             grs[idx].d = nd;
-            answer += calc(idx, 0);
+            calc(idx);
+            answer += best;
         }
 
     }
@@ -105,9 +108,9 @@ public class Main {
     // 정령의 이동
     // 현재에서 남쪽 방향의 좌표와 출구에서 이동을 통해 움직인 남쪽 좌표와 비교
     // 출구에서 갈 수 있는 골렘의 수는 1개
-    public static int calc(int idx, int result) {
+    public static void calc(int idx) {
         visit[idx] = true;
-        result = Math.max(grs[idx].x - 1, result);  // 현재 위치의 골렘 x + 1값과 result 중 최대값 선택
+        best = Math.max(grs[idx].x - 1, best);  // 현재 위치의 골렘 x + 1값과 result 중 최대값 선택
         int[] exit = grs[idx].getExit();
 
         for (int i = 0; i < 4; i++) {
@@ -117,9 +120,8 @@ public class Main {
             if (board[exitX][exitY] == 0) continue;
             if (visit[board[exitX][exitY]]) continue;
 
-            return calc(board[exitX][exitY], result);
+            calc(board[exitX][exitY]);
         }
-        return result;
     }
 
     // 아래, 왼, 오 체크
