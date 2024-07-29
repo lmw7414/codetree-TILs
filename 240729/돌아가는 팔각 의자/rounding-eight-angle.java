@@ -35,11 +35,9 @@ public class Main {
         visited[num] = true;
         if(left) {
             setDir(num - 1, -dir);
-            return;
         } 
         if(right) {
             setDir(num + 1, -dir);
-            return;
         }
     }
 
