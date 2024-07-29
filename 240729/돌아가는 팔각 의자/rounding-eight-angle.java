@@ -2,6 +2,7 @@ import java.io.*;
 
 public class Main {
     static int[][] arr = new int[4][8];
+    static int[] dirArr;
     static boolean[] visited;
     static int K;
     public static void main(String[] args) throws IOException{
@@ -16,46 +17,52 @@ public class Main {
         K = Integer.parseInt(br.readLine());
         for(int i = 0; i< K; i++) {
             String[] input = br.readLine().split(" ");
-            int chairIdx = (input[0].charAt(0)- '0') - 1;
-            int dir = input[1].charAt(0)- '0';
+            int chairIdx = Integer.parseInt(input[0]) - 1;
+            int dir = Integer.parseInt(input[1]);
             visited = new boolean[4];
-            calc(chairIdx, dir);
+            dirArr = new int[4];
+            setDir(chairIdx, dir);
+            setOctagonalChair();
         }
         System.out.println(getAnswer());
     }
 
 
-    public static void calc(int num, int dir) {
+    public static void setDir(int num, int dir) {
         boolean left = num - 1 >= 0 && arr[num][6] != arr[num - 1][2] && !visited[num - 1]; // 왼쪽 방향 회전되는지 체크
         boolean right = num + 1 < 4 && arr[num][2] != arr[num + 1][6] && !visited[num + 1];  // 오른쪽 방향 회전되는지 체크
-        setOctagonalChair(num, dir);  // 회전
+        dirArr[num] = dir;
         visited[num] = true;
         if(left) {
-            calc(num - 1, -dir);
+            setDir(num - 1, -dir);
             return;
         } 
         if(right) {
-            calc(num + 1, -dir);
+            setDir(num + 1, -dir);
             return;
         }
     }
 
 
     // 팔각의자 회전
-    public static void setOctagonalChair(int chairIdx, int dir) {
-        if(dir == 1) { // 시계방향 ->
-            int temp = arr[chairIdx][7];
-            for(int i = 7; i > 0; i--) {
-                arr[chairIdx][i] = arr[chairIdx][i - 1];
+    public static void setOctagonalChair() {
+        for(int chairIdx = 0; chairIdx < 4; chairIdx++) {
+            int dir = dirArr[chairIdx];
+            if(dir == 1) { // 시계방향 ->
+                int temp = arr[chairIdx][7];
+                for(int i = 7; i > 0; i--) {
+                    arr[chairIdx][i] = arr[chairIdx][i - 1];
+                }
+                arr[chairIdx][0] = temp;
+            } else if(dir == -1){ // 반시계 방향 <-
+                int temp = arr[chairIdx][0];
+                for(int i = 0; i < 7; i++) {
+                    arr[chairIdx][i] = arr[chairIdx][i + 1];
+                }
+                arr[chairIdx][7] = temp;
             }
-            arr[chairIdx][0] = temp;
-        } else { // 반시계 방향 <-
-            int temp = arr[chairIdx][0];
-            for(int i = 0; i < 7; i++) {
-                arr[chairIdx][i] = arr[chairIdx][i + 1];
-            }
-            arr[chairIdx][7] = temp;
         }
+        
     }
 
     public static int getAnswer() {
