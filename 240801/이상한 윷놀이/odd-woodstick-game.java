@@ -51,6 +51,7 @@ public class Main {
             int x = Integer.parseInt(st.nextToken());
             int y = Integer.parseInt(st.nextToken());
             int d = Integer.parseInt(st.nextToken());
+            board[x][y].add(k);
             points.add(new Point(x, y, d));
         }
 
