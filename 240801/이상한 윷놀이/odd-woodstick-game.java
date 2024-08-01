@@ -66,9 +66,9 @@ public class Main {
             for(int idx = 0; idx < points.size(); idx++) {
                 Point cur = points.get(idx);
                 if(board[cur.x][cur.y].size() >= 4) return turn; // 4개 이상 체크
-                int nextPos = arr[cur.x + dx[cur.d]][cur.y + dy[cur.d]];
                 move(board[cur.x][cur.y], idx, cur.x + dx[cur.d], cur.y + dy[cur.d]);
             }
+            if(board[points.get(points.size()-1).x][points.get(points.size()-1).y].size() >= 4) return turn; // 4개 이상 체크
             turn++;
         }
     }
