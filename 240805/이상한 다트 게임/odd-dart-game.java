@@ -90,15 +90,20 @@ public class Main {
     public static void normalization() {
         int sum = 0;
         int cnt = 0;
+        int zeroCnt = 0;
         for(int i = 0; i < N; i++) {
             for(int j = 0; j < M; j++) {
-                if(arr[i][j] == 0) continue;
+                if(arr[i][j] == 0) {
+                    zeroCnt++;
+                    continue;
+                }
                 sum += arr[i][j];
                 cnt++;
             }
         }
-        if (cnt == N * M) return;  // 원판에 남은 수가 없는 경우
+        if (zeroCnt == N * M) return;  // 원판에 남은 수가 없는 경우
         int avg = sum / cnt;
+
 
         for(int i = 0; i < N; i++) {
             for(int j = 0; j < M; j++) {
