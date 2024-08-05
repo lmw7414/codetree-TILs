@@ -39,7 +39,9 @@ public class Main {
         if(d == 1) k = M - k; // 반시계
         for(int i = x; i <= N; i += x) {
             int[] temp = new int[M];
-            for(int j = 0; j < M; j++) temp[j] = arr[i-1][j];
+            for(int j = 0; j < M; j++) {
+                temp[j] = arr[i-1][j];
+            }
             for(int j = 0; j < M; j++) {
                 arr[i-1][(k + j) % M] = temp[j];
             }
@@ -100,6 +102,7 @@ public class Main {
 
         for(int i = 0; i < N; i++) {
             for(int j = 0; j < M; j++) {
+                if(arr[i][j] == 0) continue;
                 if(arr[i][j] > avg) arr[i][j]--;
                 else if(arr[i][j] < avg) arr[i][j]++;
             }
@@ -122,7 +125,7 @@ public class Main {
     public static void printArr() {
         for(int i = 0; i < N; i++) {
             for(int j = 0; j < M; j++) {
-                System.out.print(arr[i][j] + " ");
+                System.out.print(arr[i][j] + "\t");
             }
             System.out.println();
         }
