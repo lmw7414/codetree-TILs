@@ -29,7 +29,6 @@ public class Main {
             rotate(x, d, k);
             boolean result = erase();
             if(!result) normalization();
-            //printArr();
         }
         System.out.println(getResult());
 
@@ -39,11 +38,11 @@ public class Main {
     public static void rotate(int x, int d, int k) {
         if(d == 1) k = M - k; // 반시계
         for(int i = x; i <= N; i += x) {
-            int temp = arr[i-1][k];
-            for(int j = 0; j < M-1; j++) {
-                arr[i-1][(k + j) % M] = arr[i-1][j];
+            int[] temp = new int[M];
+            for(int j = 0; j < M; j++) temp[j] = arr[i-1][j];
+            for(int j = 0; j < M; j++) {
+                arr[i-1][(k + j) % M] = temp[j];
             }
-            arr[i-1][M-2] = temp;
         }
     }
 
