@@ -28,6 +28,7 @@ public class Main {
         }
         System.out.println(getResult());
     }
+
     public static void initSupplements() {
         supplements = new ArrayDeque<>();
         supplements.add(new int[] {N - 2, 0});
@@ -42,17 +43,22 @@ public class Main {
     public static void simulate(int d, int p) {
         boolean[][] visit = new boolean[N][N];
         int[][] before;
+        moveSupplement(d, p);  // 영양제 이동 후 1 증가
+        before = copyArr(); 
         while(!supplements.isEmpty()) {
             int[] cur = supplements.poll();
-            cur[0] = (cur[0] + dx[d] * p) % N;
-            cur[1] = (cur[1] + dy[d] * p) % N;
-            arr[cur[0]][cur[1]]++; // 영양제 투입 자리 1 증가
-            before = copyArr(); 
-
             arr[cur[0]][cur[1]] += countRibrosu(before, cur[0], cur[1]);
             visit[cur[0]][cur[1]] = true;
         }
         buySupplement(visit);
+    }
+    // 영양제 이동 후 1 증가
+    public static void moveSupplement(int d, int p) {
+        for(int[] supplement : supplements) {
+            supplement[0] = (N + supplement[0] + (dx[d] * p)) % N;
+            supplement[1] = (N + supplement[1] + (dy[d] * p)) % N;
+            arr[supplement[0]][supplement[1]]++; // 영양제 투입 자리 1 증가
+        }
     }
 
     // 대각선 방향 높이가 1 이상인 리브로수 카운트
@@ -98,5 +104,14 @@ public class Main {
             }
         }
         return copy;
+    }
+
+    public static void printArr(int[][] arr) {
+        for(int i = 0; i< N; i++) {
+            for(int j = 0; j<N; j++) {
+                System.out.print(arr[i][j] + "\t");
+            }
+            System.out.println();
+        }
     }
 }
