@@ -41,6 +41,7 @@ public class Main {
             relative[attacker.x][attacker.y] = true;
             // 공격대상 선정
             Point strongest = strongestTower();
+            if(strongest.x == -1) break;
             relative[strongest.x][strongest.y] = true;
             // 레이저 공격
             List<Point> result = laiserAttack(attacker, strongest);
