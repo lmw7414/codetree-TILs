@@ -30,8 +30,8 @@ public class Main {
             Point weaker = new Point(-1, -1);
             Point stronger = new Point(-1, -1);
             findWeakestAndStrongest(weaker, stronger);
+            if (weaker.x == stronger.x && weaker.y == stronger.y) break;
             relative[weaker.x][weaker.y] = true;
-            if (stronger.x == -1) break;
             relative[stronger.x][stronger.y] = true;
 
             // 레이저 공격
@@ -43,7 +43,7 @@ public class Main {
             repair(); // 공격과 무관한 포탄 정비 +1
             addAttackTurn(weaker); // 턴 증가
         }
-
+        //printArr(arr);
         getResult();
     }
 
@@ -212,6 +212,16 @@ public class Main {
             }
         }
         System.out.println(max);
+    }
+
+    public static void printArr(int[][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr[i].length; j++) {
+                if(arr[i][j] == 100000) System.out.print("INF ");
+                else System.out.print(arr[i][j] + "\t");
+            }
+            System.out.println();
+        }
     }
 
     static class Point {
