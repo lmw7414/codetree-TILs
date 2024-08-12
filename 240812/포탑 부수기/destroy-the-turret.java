@@ -43,16 +43,16 @@ public class Main {
             // 레이저 공격
             List<Point> result = laiserAttack(attacker, strongest);
             if (result != null) {
-//                System.out.print("laiser path : ");
-//                for (Point p : result) {
-//                    System.out.print(p.x + " " + p.y + " ->");
-//                }
-//                System.out.println();
+                // System.out.print("laiser path : ");
+                // for (Point p : result) {
+                //     System.out.print(p.x + " " + p.y + " ->");
+                // }
+                // System.out.println();
                 laiserBomb(result, arr[attacker.x][attacker.y], strongest);
             } else { // 레이저 불가시 포탄 공격
                 bomb(attacker, strongest);
             }
-//            printArr(arr);
+            //printArr(arr);
             repair(); // 공격과 무관한 포탄 정비 +1
             addAttackTurn(attacker); // 턴 증가
         }
@@ -75,7 +75,7 @@ public class Main {
             }
         }
         arr[bx][by] += N + M;
-//        System.out.println("attacker : " + bx + " " + by);
+        //System.out.println("attacker : " + bx + " " + by);
         return new Point(bx, by);
     }
 
@@ -103,7 +103,7 @@ public class Main {
                 }
             }
         }
-//        System.out.println("victim : " + bx + " " + by);
+        //System.out.println("victim : " + bx + " " + by);
         return new Point(bx, by);
     }
 
@@ -134,6 +134,7 @@ public class Main {
     public static List<Point> findPath(Point start, Point victim, int[][] path) {
         int[] dx = {0, 1, 0, -1}; // 우하좌상
         int[] dy = {1, 0, -1, 0};
+        int max = path[victim.x][victim.y];
         List<Point> list = new ArrayList<>();
         int curX = start.x;
         int curY = start.y;
@@ -143,6 +144,7 @@ public class Main {
             int nx = (N + curX + dx[d]) % N;
             int ny = (M + curY + dy[d]) % M;
             if (path[nx][ny] == cur + 1) {
+                if(cur + 1 == max && (nx != victim.x || ny != victim.y)) continue;
                 curX = nx;
                 curY = ny;
                 list.add(new Point(curX, curY));
