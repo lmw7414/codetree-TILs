@@ -164,6 +164,7 @@ public class Main {
     public static void laserBomb(List<Point> path, Point attack, Point victim) {
         int power = arr[attack.x][attack.y];
         arr[victim.x][victim.y] -= power;
+        if (arr[victim.x][victim.y] < 0) arr[victim.x][victim.y] = 0;
         for (Point target : path) {
             relative[target.x][target.y] = true;
             if (target.x == attack.x && target.y == attack.y) continue;
