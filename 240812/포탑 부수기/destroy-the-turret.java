@@ -1,5 +1,7 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.io.*;
 
 /**
  * [문제 해결 프로세스]
@@ -48,11 +50,11 @@ public class Main {
                 //     System.out.print(p.x + " " + p.y + " ->");
                 // }
                 // System.out.println();
-                laiserBomb(result, arr[attacker.x][attacker.y], strongest);
+                laserBomb(result, attacker, strongest);
             } else { // 레이저 불가시 포탄 공격
                 bomb(attacker, strongest);
             }
-            //printArr(arr);
+            // printArr(arr);
             repair(); // 공격과 무관한 포탄 정비 +1
             addAttackTurn(attacker); // 턴 증가
         }
@@ -67,7 +69,11 @@ public class Main {
             for (int x = N - 1; x >= 0; x--) {
                 if (arr[x][y] == 0) continue;
                 if (power >= arr[x][y]) {
-                    if (power == arr[x][y] && cntArr[bx][by] < cntArr[x][y]) continue;
+                    if (power == arr[x][y]) {
+                        if (cntArr[bx][by] < cntArr[x][y]) continue;
+                        else if (bx + by > x + y) continue;
+                        else if (by > y) continue;
+                    }
                     power = arr[x][y];
                     bx = x;
                     by = y;
@@ -75,7 +81,7 @@ public class Main {
             }
         }
         arr[bx][by] += N + M;
-        //System.out.println("attacker : " + bx + " " + by);
+        // System.out.println("attacker : " + bx + " " + by);
         return new Point(bx, by);
     }
 
@@ -94,8 +100,8 @@ public class Main {
                 if (power <= arr[x][y]) {
                     if (power == arr[x][y]) {
                         if (cntArr[bx][by] > cntArr[x][y]) continue;
-                        if (bx + by < x + y) continue;
-                        if (by < y) continue;
+                        else if (bx + by < x + y) continue;
+                        else if (by < y) continue;
                     }
                     power = arr[x][y];
                     bx = x;
@@ -103,7 +109,7 @@ public class Main {
                 }
             }
         }
-        //System.out.println("victim : " + bx + " " + by);
+        // System.out.println("victim : " + bx + " " + by);
         return new Point(bx, by);
     }
 
@@ -128,39 +134,39 @@ public class Main {
                 queue.add(new Point(nx, ny));
             }
         }
-        return findPath(start, victim, pathArr);
+        return findPath(victim, pathArr);
     }
 
-    public static List<Point> findPath(Point start, Point victim, int[][] path) {
+    public static List<Point> findPath(Point start, int[][] path) {
         int[] dx = {0, 1, 0, -1}; // 우하좌상
         int[] dy = {1, 0, -1, 0};
-        int max = path[victim.x][victim.y];
         List<Point> list = new ArrayList<>();
         int curX = start.x;
         int curY = start.y;
-        int cur = 0;
+        int cur = path[start.x][start.y];
 
-        for (int d = 0; d < 4; d++) {
+        for (int d = 3; d >= 0; d--) {
             int nx = (N + curX + dx[d]) % N;
             int ny = (M + curY + dy[d]) % M;
-            if (path[nx][ny] == cur + 1) {
-                if(cur + 1 == max && (nx != victim.x || ny != victim.y)) continue;
+            if (path[nx][ny] == cur - 1) {
                 curX = nx;
                 curY = ny;
                 list.add(new Point(curX, curY));
-                if (nx == victim.x && ny == victim.y) return list;
-                cur++;
-                d = -1;
+                cur--;
+                if (cur == 0) return list;
+                d = 4;
             }
         }
         return null;
     }
 
 
-    public static void laiserBomb(List<Point> path, int power, Point victim) {
+    public static void laserBomb(List<Point> path, Point attack, Point victim) {
+        int power = arr[attack.x][attack.y];
+        arr[victim.x][victim.y] -= power;
         for (Point target : path) {
             relative[target.x][target.y] = true;
-            if (target.x == victim.x && target.y == victim.y) arr[target.x][target.y] -= power;
+            if (target.x == attack.x && target.y == attack.y) continue;
             else arr[target.x][target.y] -= power / 2;
             if (arr[target.x][target.y] < 0) arr[target.x][target.y] = 0;
         }
@@ -220,7 +226,7 @@ public class Main {
             for (int j = 0; j < arr[i].length; j++) {
                 System.out.print(arr[i][j] + "\t");
             }
-            System.out.println("\n");
+            System.out.println();
         }
     }
 
