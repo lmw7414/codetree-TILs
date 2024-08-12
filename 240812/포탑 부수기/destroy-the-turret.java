@@ -46,12 +46,18 @@ public class Main {
             arr[attacker.x][attacker.y] += N + M;
             List<Point> result = laiserAttack(attacker, strongest);
             if (result != null) {
+//                System.out.print("laiser path : ");
+//                for (Point p : result) {
+//                    System.out.print(p.x + " " + p.y + " ->");
+//                }
+//                System.out.println();
                 laserBomb(result, attacker, strongest);
             } else { // 레이저 불가시 포탄 공격
                 bomb(attacker, strongest);
             }
             repair(); // 공격과 무관한 포탄 정비 +1
             addAttackTurn(attacker); // 턴 증가
+//            printArr(arr);
         }
 
         getResult();
@@ -78,6 +84,8 @@ public class Main {
 
             }
         }
+
+//        System.out.println("attacker : " + bx + " " + by);
         return new Point(bx, by);
     }
 
@@ -122,6 +130,7 @@ public class Main {
                 }
             }
         }
+//        System.out.println("victim : " + bx + " " + by);
         return new Point(bx, by);
     }
 
@@ -141,6 +150,7 @@ public class Main {
 
     public static List<Point> laiserAttack(Point start, Point victim) {
         int[][] pathArr = new int[N][M];
+        Point[][] pArr = new Point[N][M]; // 이전 것을 기록
         for (int i = 0; i < N; i++) Arrays.fill(pathArr[i], 100000);
         pathArr[start.x][start.y] = 0;
         int[] dx = {0, 1, 0, -1}; // 우하좌상
@@ -156,34 +166,26 @@ public class Main {
                 int ny = (M + cur.y + dy[d]) % M;
                 if (arr[nx][ny] == 0) continue;
                 if (pathArr[nx][ny] < pathArr[cur.x][cur.y] + 1) continue;
+                if(pArr[nx][ny] == null) {
+                    pArr[nx][ny] = new Point(cur.x, cur. y);
+                }
                 pathArr[nx][ny] = pathArr[cur.x][cur.y] + 1;
                 queue.add(new Point(nx, ny));
             }
         }
-        return findPath(victim, pathArr);
+//        printArr(pathArr);
+        return findPath(victim, start, pArr);
     }
 
-    public static List<Point> findPath(Point start, int[][] path) {
-        int[] dx = {0, 1, 0, -1}; // 우하좌상
-        int[] dy = {1, 0, -1, 0};
+    public static List<Point> findPath(Point start, Point dest, Point[][] path) {
         List<Point> list = new ArrayList<>();
-        int curX = start.x;
-        int curY = start.y;
-        int cur = path[start.x][start.y];
-
-        for (int d = 3; d >= 0; d--) {
-            int nx = (N + curX + dx[d]) % N;
-            int ny = (M + curY + dy[d]) % M;
-            if (path[nx][ny] == cur - 1) {
-                curX = nx;
-                curY = ny;
-                list.add(new Point(curX, curY));
-                cur--;
-                if (cur == 0) return list;
-                d = 4;
-            }
+        Point cur = start;
+        while(true) {
+           list.add(cur);
+           cur = path[cur.x][cur.y];
+           if (cur == null) return null;
+           if (cur.x == dest.x && cur.y == dest.y) return  list;
         }
-        return null;
     }
 
 
@@ -193,6 +195,7 @@ public class Main {
         if (arr[victim.x][victim.y] < 0) arr[victim.x][victim.y] = 0;
         for (Point target : path) {
             relative[target.x][target.y] = true;
+            if (target.x == victim.x && target.y == victim.y) continue;
             if (target.x == attack.x && target.y == attack.y) continue;
             else arr[target.x][target.y] -= power / 2;
             if (arr[target.x][target.y] < 0) arr[target.x][target.y] = 0;
@@ -235,6 +238,9 @@ public class Main {
                 else cntArr[i][j]++;
             }
         }
+//        System.out.println("cntArr");
+//        printArr(cntArr);
+//        System.out.println();
     }
 
     public static void getResult() {
@@ -248,10 +254,10 @@ public class Main {
     }
 
     public static void printArr(int[][] arr) {
-        System.out.println();
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < arr[i].length; j++) {
-                System.out.print(arr[i][j] + "\t");
+                if(arr[i][j] == 100000) System.out.print("INF ");
+                else System.out.print(arr[i][j] + "\t");
             }
             System.out.println();
         }
