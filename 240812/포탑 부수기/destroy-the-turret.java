@@ -16,7 +16,6 @@ public class Main {
     static int N, M, K;
     static int[][] arr, cntArr;
     static boolean[][] relative;
-    static int idx = 0;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -41,7 +40,7 @@ public class Main {
             relative[attacker.x][attacker.y] = true;
             // 공격대상 선정
             Point strongest = strongestTower();
-            if(strongest.x == -1) break;
+            if (strongest.x == -1) break;
             relative[strongest.x][strongest.y] = true;
             // 레이저 공격
             List<Point> result = laiserAttack(attacker, strongest);
@@ -55,9 +54,9 @@ public class Main {
             } else { // 레이저 불가시 포탄 공격
                 bomb(attacker, strongest);
             }
-            // printArr(arr);
             repair(); // 공격과 무관한 포탄 정비 +1
             addAttackTurn(attacker); // 턴 증가
+            // printArr(arr);
         }
 
         getResult();
@@ -69,22 +68,40 @@ public class Main {
         for (int y = M - 1; y >= 0; y--) {
             for (int x = N - 1; x >= 0; x--) {
                 if (arr[x][y] == 0) continue;
-                if (power >= arr[x][y]) {
-                    if (power == arr[x][y]) {
-                        if (cntArr[bx][by] < cntArr[x][y]) continue;
-                        else if (bx + by > x + y) continue;
-                        else if (by > y) continue;
-                    }
+                if (power < arr[x][y]) continue;
+                if (bx == -1 && by == -1) {
+                    power = arr[x][y];
+                    bx = x;
+                    by = y;
+                    continue;
+                }
+                if (isAttackBest(new Point(bx, by), new Point(x, y))) {
                     power = arr[x][y];
                     bx = x;
                     by = y;
                 }
+
             }
         }
         arr[bx][by] += N + M;
-        // System.out.println("attacker : " + bx + " " + by);
+        //System.out.println("attacker : " + bx + " " + by);
         return new Point(bx, by);
     }
+
+    public static boolean isAttackBest(Point best, Point cur) {
+        if (arr[best.x][best.y] > arr[cur.x][cur.y]) return true;
+        else if (arr[best.x][best.y] == arr[cur.x][cur.y]) {
+            if (cntArr[best.x][best.y] > cntArr[cur.x][cur.y]) return true;
+            else if (cntArr[best.x][best.y] == cntArr[cur.x][cur.y]) {
+                if (best.x + best.y < cur.x + cur.y) return true;
+                else if (best.x + best.y == cur.x + cur.y) {
+                    if (best.y < cur.y) return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     /*
      * 1. 공격력 가장 높음
@@ -98,20 +115,36 @@ public class Main {
         for (int y = 0; y < M; y++) {
             for (int x = 0; x < N; x++) {
                 if (arr[x][y] == 0 || relative[x][y]) continue;
-                if (power <= arr[x][y]) {
-                    if (power == arr[x][y]) {
-                        if (cntArr[bx][by] > cntArr[x][y]) continue;
-                        else if (bx + by < x + y) continue;
-                        else if (by < y) continue;
-                    }
+                if (power > arr[x][y]) continue;
+                if (bx == -1 && by == -1) {
+                    power = arr[x][y];
+                    bx = x;
+                    by = y;
+                    continue;
+                }
+                if (isStrongest(new Point(bx, by), new Point(x, y))) {
                     power = arr[x][y];
                     bx = x;
                     by = y;
                 }
             }
         }
-        // System.out.println("victim : " + bx + " " + by);
+        //System.out.println("victim : " + bx + " " + by);
         return new Point(bx, by);
+    }
+
+    public static boolean isStrongest(Point best, Point cur) {
+        if (arr[best.x][best.y] < arr[cur.x][cur.y]) return true;
+        else if (arr[best.x][best.y] == arr[cur.x][cur.y]) {
+            if (cntArr[best.x][best.y] < cntArr[cur.x][cur.y]) return true;
+            else if (cntArr[best.x][best.y] == cntArr[cur.x][cur.y]) {
+                if (best.x + best.y > cur.x + cur.y) return true;
+                else if (best.x + best.y == cur.x + cur.y) {
+                    if (best.y > cur.y) return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static List<Point> laiserAttack(Point start, Point victim) {
@@ -210,6 +243,8 @@ public class Main {
                 else cntArr[i][j]++;
             }
         }
+        //System.out.println("cntArr");
+        //printArr(cntArr);
     }
 
     public static void getResult() {
