@@ -51,6 +51,7 @@ public class Main {
                     int V = Integer.parseInt(st.nextToken());
                     int U = Integer.parseInt(st.nextToken());
                     int W = Integer.parseInt(st.nextToken()); // 최대 100
+                    if(V == U) continue;
                     buildLand(V, U, W);
                 }
                 dijkstra(0);
@@ -71,7 +72,7 @@ public class Main {
             }
         }
         System.out.print(sb.toString());
-    } 
+    }
 
     // 100
     public static void buildLand(int v, int u, int w) {
@@ -96,6 +97,10 @@ public class Main {
 
     // 400 최적의 여행 상품 id 출력. 없으면 -1
     public static void sell() {
+//        while(!packagePQ.isEmpty()) {
+//            Package cur = packagePQ.poll();
+//            System.out.println(cur);
+//        }
         while(true) {
             if(packagePQ.isEmpty()) break;
             int id = packagePQ.poll().id;
@@ -132,17 +137,33 @@ public class Main {
 
     // 판매 불가 상품 다시 확인
     public static void retestPackage() {
-        List<Package> temp = new ArrayList<>();
+        List<Package> temp = new ArrayList<>();  // 금지 상품
+        List<Package> save = new ArrayList<>();
+        // 정상 상품
+        while(!packagePQ.isEmpty()) {
+            Package cur = packagePQ.poll();
+            if(!ids.contains(cur.id)) continue;
+            cur.setCost();
+            if(cur.cost < 0) { // 판매 불가 상품
+                temp.add(cur);
+            } else {
+                save.add(cur);
+            }
+        }
+
+        // 금지 상품
         while(!prohibit.isEmpty()) {
             Package cur = prohibit.poll();
-
-            if(cur.revenue - dist[cur.dest] < 0) { // 판매 불가 상품
+            if(!ids.contains(cur.id)) continue;
+            cur.setCost();
+            if(cur.cost < 0) { // 판매 불가 상품
                 temp.add(cur);
             } else {
                 packagePQ.add(cur);
             }
         }
         for(Package p : temp) prohibit.add(p);
+        for(Package p : save) packagePQ.add(p);
     }
 
     public static void init(int n) {
@@ -175,8 +196,8 @@ public class Main {
             this.cost = revenue - dist[dest];
         }
 
-        public int setCost(int dist) {
-            return revenue - dist;
+        public int setCost() {
+            return cost = revenue - dist[dest];
         }
 
         // cost가 최대인 것
@@ -186,5 +207,10 @@ public class Main {
             if (this.cost == p.cost) return this.id - p.id;
             return p.cost - this.cost;
         }
+        @Override
+        public String toString() {
+            return "id : " + id + " revenue : " + revenue + " dest : " + dest + " cost : " + cost;
+        }
+
     }
 }
