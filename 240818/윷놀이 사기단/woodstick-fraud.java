@@ -64,14 +64,8 @@ public class Main {
                 }
             }
             result += cur.go(move[idx]);
-            // System.out.print(cases[idx] + " " + cur.curIdx);
-            // System.out.println(" " + result + " ");
         }
-        // if(result == 221) {
-        //     for(int i = 0 ; i < MAX; i++) System.out.print(cases[i] + " ");
-        //     System.out.println("result : " + result);
-        //     //System.out.println();
-        // }
+
         
         return result;
     }
@@ -106,21 +100,27 @@ public class Main {
         }
 
         public boolean isSamePlace(Piece other, int move) {
-            if(other.isEndOfArr()) return false; // 다른 말은 마지막 위치이므로 상관 없음
             int nextIdx = this.curIdx + move >= this.arr.length - 1 ? this.arr.length - 1 : this.curIdx + move;
+            if(other.isEndOfArr() || nextIdx == arr.length - 1) return false; // 둘 중 하나의 말이라도 탈출했으면 상관 없음
+            if(other.arr == original && other.curIdx == 0) return false; // 시작 위치 일 때
             if(this.arr[nextIdx] == 40 && other.arr[other.curIdx] == 40) return true; // 이동하려는 곳이 40이고 다른 말도 40에 위치
-            if(this.arr == original) {
+            
+            if(this.arr == original && other.arr == original) {
+                if(nextIdx == other.curIdx) return true;
+                return false;
+            } else if(this.arr == original && other.arr != original) {
                 if(original[nextIdx] == 10 ||
                         original[nextIdx] == 20 ||
                         original[nextIdx] == 30) {
                     if(other.arr != original && other.curIdx == 0) return true;
                 }
                 return false;
-            } else {  //original 이 아닐때 // 25, 30 , 35, 40 인 경우
-                if(nextIdx == arr.length - 1) return false; // 이미 해당 말은 탈출
+            }
+            else if(this. arr != original && other.arr != original) {
                 if(this.arr[nextIdx] == other.arr[other.curIdx]) return true;
                 return false;
-            }
+            } 
+            return false;
         }
 
         public boolean isEndOfArr() {  // true -> 마지막 위치
