@@ -64,8 +64,13 @@ public class Main {
                 }
             }
             result += cur.go(move[idx]);
+            // System.out.print(cases[idx] + " " + cur.curIdx);
+            // System.out.println(" " + result + " ");
         }
-
+        // if(result == 188) {
+        //     for(int i = 0 ; i < MAX; i++) System.out.print(cases[i] + " ");
+        //     System.out.println("result : " + result);
+        // }
         
         return result;
     }
@@ -101,8 +106,8 @@ public class Main {
 
         public boolean isSamePlace(Piece other, int move) {
             int nextIdx = this.curIdx + move >= this.arr.length - 1 ? this.arr.length - 1 : this.curIdx + move;
-            if(other.isEndOfArr() || nextIdx == arr.length - 1) return false; // 둘 중 하나의 말이라도 탈출했으면 상관 없음
-            if(other.arr == original && other.curIdx == 0) return false; // 시작 위치 일 때
+            if(other.isEndOfArr() || nextIdx == this.arr.length - 1) return false; // 둘 중 하나의 말이라도 탈출했으면 상관 없음
+            if(other.arr == original && other.curIdx == 0) return false; // 다른 말은 아직 출발하지 않았을 때
             if(this.arr[nextIdx] == 40 && other.arr[other.curIdx] == 40) return true; // 이동하려는 곳이 40이고 다른 말도 40에 위치
             
             if(this.arr == original && other.arr == original) {
@@ -115,8 +120,7 @@ public class Main {
                     if(other.arr != original && other.curIdx == 0) return true;
                 }
                 return false;
-            }
-            else if(this. arr != original && other.arr != original) {
+            } else if(this. arr != original && other.arr != original) {
                 if(this.arr[nextIdx] == other.arr[other.curIdx]) return true;
                 return false;
             } 
