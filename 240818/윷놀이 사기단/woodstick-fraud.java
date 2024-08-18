@@ -117,7 +117,7 @@ public class Main {
                 if(original[nextIdx] == 10 ||
                         original[nextIdx] == 20 ||
                         original[nextIdx] == 30) {
-                    if(other.arr[other.curIdx] == val) return true;
+                    if(other.curIdx < 4 && other.arr[other.curIdx] == val) return true;
                 }
                 return false;
             } else if(other.arr != original) {
