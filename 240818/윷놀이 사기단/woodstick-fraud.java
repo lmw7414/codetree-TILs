@@ -30,7 +30,7 @@ public class Main {
         for(int i = 0; i < 10; i++) {
             move[i] = Integer.parseInt(st.nextToken());
         }
-        permutation(0);
+        permutation(1);
         //cases = new int[]{0,0,0,1,0,2,2,0,2,2};
         //calc();
         System.out.println(answer);
@@ -64,13 +64,8 @@ public class Main {
                 }
             }
             result += cur.go(move[idx]);
-            // System.out.print(cases[idx] + " " + cur.curIdx);
-            // System.out.println(" " + result + " ");
         }
-        // if(result == 188) {
-        //     for(int i = 0 ; i < MAX; i++) System.out.print(cases[i] + " ");
-        //     System.out.println("result : " + result);
-        // }
+
         
         return result;
     }
@@ -97,15 +92,14 @@ public class Main {
         }
         public int go(int move) {
             curIdx += move;
-            if(curIdx >= arr.length - 1) curIdx = arr.length - 1; // 도착지에 도착
+            if(curIdx > arr.length - 1) curIdx = arr.length - 1; // 도착지에 도착
             int val = arr[curIdx];
             if(this.arr == original) setArr();
-
             return val;
         }
 
         public boolean isSamePlace(Piece other, int move) {
-            int nextIdx = this.curIdx + move >= this.arr.length - 1 ? this.arr.length - 1 : this.curIdx + move;
+            int nextIdx = Math.min(this.curIdx + move, this.arr.length - 1);
             if(other.isEndOfArr() || nextIdx == this.arr.length - 1) return false; // 둘 중 하나의 말이라도 탈출했으면 상관 없음
             if(other.arr == original && other.curIdx == 0) return false; // 다른 말은 아직 출발하지 않았을 때
             if(this.arr[nextIdx] == 40 && other.arr[other.curIdx] == 40) return true; // 이동하려는 곳이 40이고 다른 말도 40에 위치
@@ -114,10 +108,11 @@ public class Main {
                 if(nextIdx == other.curIdx) return true;
                 return false;
             } else if(this.arr == original && other.arr != original) {
+                int val = original[nextIdx];
                 if(original[nextIdx] == 10 ||
                         original[nextIdx] == 20 ||
                         original[nextIdx] == 30) {
-                    if(other.arr != original && other.curIdx == 0) return true;
+                    if(other.arr[other.curIdx] == val) return true;
                 }
                 return false;
             } else if(this. arr != original && other.arr != original) {
@@ -128,7 +123,7 @@ public class Main {
         }
 
         public boolean isEndOfArr() {  // true -> 마지막 위치
-            if(arr[curIdx] == arr.length - 1) return true;
+            if(this.curIdx == this.arr.length - 1) return true;
             return false;
         }
     }
