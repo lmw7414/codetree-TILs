@@ -123,7 +123,7 @@ public class Main {
             return;
         }
 
-        if(arr[nx][ny] != 0) {  // if exist santa
+        if(arr[nx][ny] != 0 && arr[nx][ny] != santa.idx) {  // if exist santa
             collision(santas[arr[nx][ny] - 1], 1, d);
         }
 
