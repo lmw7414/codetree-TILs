@@ -73,7 +73,7 @@ public class Main {
             arr[x][y] = idx;
         }
         Arrays.sort(santas, (a1, b1) -> a1.idx - b1.idx);
-
+        //printArr();
         simulate();
         printScore();
 
@@ -82,6 +82,7 @@ public class Main {
     public static void simulate() {
 
         for (int turn = 1; turn <= M; turn++) {
+            // System.out.println("turn : " + turn);
             for(int i = 1; i <= P; i++) {
                 if(tArr[i] != 0 && santas[i-1].status != -1) {
                     tArr[i]--;
@@ -92,8 +93,12 @@ public class Main {
             }
             // 1. rudolf's turn
             moveRudolf(findClosestSanta());
+            // System.out.println("루돌프 이동");
+            // printArr();
             // 2. santas' turn
             moveSantas();
+            // System.out.println("산타 이동");
+            // printArr();
             // 3. end Of Turn
             boolean flag = true;  // true : all santa is dead
             for(Santa santa : santas) {
@@ -103,9 +108,9 @@ public class Main {
                 }
             }
             if(flag) break;
-            // System.out.println("turn : " + turn);
-            // printArr();
-            // printScore();
+
+            //printArr();
+            //printScore();
         }
     }
 
@@ -145,7 +150,7 @@ public class Main {
             if(isOutOfRange(nx, ny))continue;
             if(arr[nx][ny] == santa.idx) {  // 산타와 충돌
                 santa.status = 1;
-                tArr[santa.idx] += 2;
+                tArr[santa.idx] = 2;
                 santa.score += C;
                 collision(santa, C, d);
                 bestX = nx;
