@@ -220,7 +220,7 @@ public class Main {
                     if(arr[nx][ny] == 100) { // collision
                         isCollision = true;
                         santa.status = 1;
-                        tArr[santa.idx] += 2;
+                        tArr[santa.idx] = 2;
                         collision(santa, D - 1, (d + 4) % 8);
                         santa.score += D;
                         break;
