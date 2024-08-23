@@ -41,7 +41,7 @@ public class Main {
             return;
         } else {
             int[] dir = new int[path.size() - 1];
-            for(int i = 0; i < path.size() - 1; i++) {
+            for(int i = 0; i < path.size() - 1; i++) {  // 끝점에서부터 시작점으로 돌아오며 방향 체크
                 dir[i] = getDir(path.get(path.size() - i - 1), path.get(path.size() - i - 2));
             }
             // for(int d : dir) System.out.print(d + " ");
@@ -49,7 +49,7 @@ public class Main {
             Point start = path.get(path.size() - 1);
             
             for(int d : dir) {
-                int nd = (d + 3) % 4;
+                int nd = (d + 3) % 4;  // 위에서 기록한 방향을 90도 회전
                 //System.out.println(start.x + " " + start.y);
                 Point next = new Point(start.x + dx[nd], start.y + dy[nd]);
                 path.add(next);
@@ -68,19 +68,18 @@ public class Main {
         if(x == 0 && y == 1) return 2; // 좌
         else if(x == 0 && y == -1) return 0;  // 우
         else if(x == -1 && y == 0) return 3; // 하
-        else  return 1;  // 상
+        else return 1;  // 상
     }
 
     public static int calc() {
         int answer = 0;
-        for(int i = 0; i <= 100; i++) {
-            for(int j = 0; j <= 100; j++) {
+        for(int i = 0; i < 100; i++) {
+            for(int j = 0; j < 100; j++) {
                 if(arr[i][j]) {
                     if(arr[i][j + 1] && arr[i + 1][j] && arr[i + 1][j + 1]) answer++;
                 }
             }
         }
-
         return answer;
     }
 
