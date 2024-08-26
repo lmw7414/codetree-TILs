@@ -37,6 +37,7 @@ public class Main {
         System.out.println(answer);
     }
 
+    // 회오리 모양으로 배열 회전(재귀)
     public static void move(int x, int y, int dir, int maxDepth, int level) {
         for(int depth = 0; depth < maxDepth; depth++) {
             x += dx[dir];
@@ -53,6 +54,12 @@ public class Main {
         move(x, y, (dir + 1) % 4, maxDepth, level);
     }
 
+    /**
+    1. 방향에 따른 비율 배열 생성
+    2. 비율 배열의 크기를 돌면서 배열을 벗어나는 경우와 벗어나지 않는 경우로 나눠 계산
+    3. 벗어나지 않는다면 기존 배열에 이동하는 먼지의 비율만큼 새로 추가
+    4. 벗어난다면 answer 변수에 추가
+    */
     public static void moveDust(int x, int y, int d) {
         int[][] scope = getScope(d);
         int value = arr[x][y];
@@ -108,7 +115,7 @@ public class Main {
             else {
                 for(int i = 0; i < 5; i++) {
                     for(int j = 0; j < 5; j++) {
-                        scope[4 - j][4- i] = dist[i][j];
+                        scope[4 - j][4 - i] = dist[i][j];
                     }
                 }
                 return scope;
