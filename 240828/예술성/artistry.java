@@ -21,13 +21,14 @@ public class Main {
             }
         }
         
-        for(int i = 0; i < 4; i++) {
+        divide();
+        permutation(1, 0);
+        for(int i = 0; i < 3; i++) {
+            rotate();
             divide();
             permutation(1, 0);
-            rotate();
         }
         System.out.println(answer);
-
     }
 
     public static void divide() {
@@ -125,7 +126,6 @@ public class Main {
                             }
                         }
                     }
-
                     return cnt;
                 }
 
