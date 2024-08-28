@@ -7,6 +7,7 @@ public class Main {
     static int ID = 1;
     static int[][] arr, territory;
     static int[] choose = new int[2];
+    static int[][] pos = new int[11][2];
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -44,6 +45,8 @@ public class Main {
                 if(visit[i][j]) continue;
                 int key = arr[i][j];
                 territory[i][j] = ID;
+                pos[ID][0] = i;
+                pos[ID][1] = j;
                 Queue<int[]> queue = new ArrayDeque<>();
                 queue.add(new int[]{i, j});
                 while(!queue.isEmpty()) {
@@ -80,58 +83,43 @@ public class Main {
     public static int calc(int a, int b) {
         int cntA, cntB, valueA, valueB;
         cntA = cntB = 0;
-        valueA = valueB = 0;
-
+        valueA = arr[pos[a][0]][pos[a][1]];
+        valueB = arr[pos[b][0]][pos[b][1]];
         for(int i = 0; i < N; i++) {
             for(int j = 0; j < N; j++) {
-                if(territory[i][j] == a) {
-                    cntA++;
-                    valueA = arr[i][j];
-                }
-                else if(territory[i][j] == b) {
-                    cntB++;
-                    valueB = arr[i][j];
-                }
+                if(territory[i][j] == a) cntA++;
+                else if(territory[i][j] == b) cntB++;
             }
         }
 
-        int area = getCoveredArea(a, b);
+        int area = getCoveredArea(pos[a][0], pos[a][1], b);
         return (cntA + cntB) * valueA * valueB * area;
     }
 
-    public static int getCoveredArea(int a, int b) {
+    public static int getCoveredArea(int ax, int ay, int b) {
         int[] dx = {-1, 1, 0, 0};
         int[] dy = {0, 0, -1, 1};
         boolean[][] visit = new boolean[N][N];
         int cnt = 0;
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < N; j++) {
-                if(territory[i][j] == a) {
-                    Queue<int[]> queue = new ArrayDeque<>();
-                    visit[i][j] = true;
-                    queue.add(new int[]{i, j});
-                    while(!queue.isEmpty()) {
-                        int[] cur = queue.poll();
-                        
-                        for(int d = 0; d < 4; d++) {
-                            int nx = cur[0] + dx[d];
-                            int ny = cur[1] + dy[d];
-                            if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
-                            if(visit[nx][ny]) continue;
-                            if(territory[nx][ny] == a) {
-                                visit[nx][ny] = true;
-                                queue.add(new int[]{nx, ny});
-                            } else {
-                                if(territory[nx][ny] == b) cnt++;
-                            }
-                        }
+        Queue<int[]> queue = new ArrayDeque<>();
+        visit[ax][ay] = true;
+        queue.add(new int[]{ax, ay});
+            while(!queue.isEmpty()) {
+                int[] cur = queue.poll();    
+                for(int d = 0; d < 4; d++) {
+                    int nx = cur[0] + dx[d];
+                    int ny = cur[1] + dy[d];
+                    if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
+                    if(visit[nx][ny]) continue;
+                    if(territory[nx][ny] == territory[ax][ay]) {
+                        visit[nx][ny] = true;
+                        queue.add(new int[]{nx, ny});
+                    } else {
+                        if(territory[nx][ny] == b) cnt++;
                     }
-                    return cnt;
                 }
-
             }
-        }
-        return 0;
+        return cnt;
     }
 
     // 십자가, 모서리 전부 회전(rotate1, rotate2)
