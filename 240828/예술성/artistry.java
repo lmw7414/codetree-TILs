@@ -92,11 +92,11 @@ public class Main {
             }
         }
 
-        int area = getCoveredArea(pos[a][0], pos[a][1], b);
+        int area = getCoveredArea(pos[a][0], pos[a][1], a, b);
         return (cntA + cntB) * valueA * valueB * area;
     }
 
-    public static int getCoveredArea(int ax, int ay, int b) {
+    public static int getCoveredArea(int ax, int ay, int a, int b) {
         int[] dx = {-1, 1, 0, 0};
         int[] dy = {0, 0, -1, 1};
         boolean[][] visit = new boolean[N][N];
@@ -111,7 +111,7 @@ public class Main {
                     int ny = cur[1] + dy[d];
                     if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
                     if(visit[nx][ny]) continue;
-                    if(territory[nx][ny] == territory[ax][ay]) {
+                    if(territory[nx][ny] == a) {
                         visit[nx][ny] = true;
                         queue.add(new int[]{nx, ny});
                     } else {
