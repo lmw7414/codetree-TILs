@@ -77,31 +77,25 @@ public class Main {
 
     // (그룹 a에 속한 칸의 수 + 그룹 b에 속한 칸의 수) x 그룹 a를 이루고 있는 숫자 값 x 그룹 b를 이루고 있는 숫자값 x 그룹 a와 그룹 b가 서로 맞닿아 있는 변의 수
     public static int calc(int a, int b) {
-        int cntA = count(a);  // 그룹 a에 속한 칸의 수
-        int cntB = count(b);  // 그룹 b에 속한 칸의 수
-        int valueA = getValue(a);
-        int valueB = getValue(b);
+        int cntA, cntB, valueA, valueB;
+        cntA = cntB = 0;
+        valueA = valueB = 0;
+
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < N; j++) {
+                if(territory[i][j] == a) {
+                    cntA++;
+                    valueA = arr[i][j];
+                }
+                else if(territory[i][j] == b) {
+                    cntB++;
+                    valueB = arr[i][j];
+                }
+            }
+        }
+
         int area = getCoveredArea(a, b);
         return (cntA + cntB) * valueA * valueB * area;
-    }
-
-    public static int count(int key) {
-        int result = 0;
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < N; j++) {
-                if(territory[i][j] == key) result++;
-            }
-        }
-        return result;
-    }
-
-    public static int getValue(int key) {
-        for(int i = 0; i < N; i++) {
-            for(int j = 0; j < N; j++) {
-                if(territory[i][j] == key) return arr[i][j];
-            }
-        }
-        return -1;
     }
 
     public static int getCoveredArea(int a, int b) {
