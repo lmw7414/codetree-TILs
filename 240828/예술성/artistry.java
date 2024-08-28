@@ -7,7 +7,7 @@ public class Main {
     static int ID = 1;
     static int[][] arr, territory;
     static int[] choose = new int[2];
-    static int[][] pos = new int[300][2];
+    static int[][] pos = new int[1000][2];
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
