@@ -44,7 +44,7 @@ public class Main {
             int x = Integer.parseInt(st.nextToken()) - 1;
             int y = Integer.parseInt(st.nextToken()) - 1;
             convenis[m] = new Point(x, y);
-            people[m] = new Human(-1, -1, -1);
+            people[m] = new Human(-1, -1);
         }
 
         int time = 0;
@@ -94,7 +94,7 @@ public class Main {
 
         while(!queue.isEmpty()) {
             Point cur = queue.poll();
-            if(arr[cur.x][cur.y] == 1) break;
+            //if(arr[cur.x][cur.y] == 1) break;
             for(int d = 0; d < 4; d++) {
                 int nx = cur.x + dx[d];
                 int ny = cur.y + dy[d];
@@ -227,10 +227,10 @@ public class Main {
         int status; // 출발전 -1, 이동중 0, 도착 1
         Stack<Point> way;
 
-        public Human(int x, int y, int status) {
+        public Human(int x, int y) {
             this.x = x;
             this.y = y;
-            this.status = status;
+            status = -1;
         }
 
     }
