@@ -72,14 +72,11 @@ public class Main {
                 } else continue; // 이미 편의점 도착
             }
 
-
             if(allArrived()) break; // 모든 사람 도착
             // 이동 불가로 변경
             while(!temp.isEmpty()) {
                 Obj cur = temp.poll();
-                visit[cur.x][cur.y] = true;
-                cur.status = 1;
-                
+                visit[cur.x][cur.y] = true;                
             }
         }
         System.out.println(time);
@@ -87,31 +84,14 @@ public class Main {
 
     // 내가 가려는 편의점과 가장 가까운 베이스 캠프 찾기
     public static Obj findBaseCamp(Obj conveni) {
-        Obj best = null;
-        int[][] map = BFS(conveni.x, conveni.y);
-        int min = Integer.MAX_VALUE;
-        for(Obj camp : camps) {
-            if(camp.status == 1) continue;
-            int dist = map[camp.x][camp.y];
-            if(min > dist) {
-                best = camp;
-                min = dist;
-            }
-        }
-        return best;
-    }
-
-
-    // 특정 지점으로 부터 근처 거리 계산 후 BFS맵 전달
-    public static int[][] BFS(int x, int y) {
         int[][] map = new int[N][N];
         for(int i = 0; i < N; i++) {
             Arrays.fill(map[i], Integer.MAX_VALUE);
         }            
-        map[x][y] = 0;
+        map[conveni.x][conveni.y] = 0;
 
         Queue<Point> queue = new ArrayDeque<>();
-        queue.add(new Point(x, y));
+        queue.add(new Point(conveni.x, conveni.y));
 
         while(!queue.isEmpty()) {
             Point cur = queue.poll();
@@ -127,7 +107,18 @@ public class Main {
                 queue.add(new Point(nx, ny));
             }
         }
-        return map;
+
+        Obj best = null;
+        int min = Integer.MAX_VALUE;
+        for(Obj camp : camps) {
+            if(visit[camp.x][camp.y]) continue;
+            int dist = map[camp.x][camp.y];
+            if(min > dist) {
+                best = camp;
+                min = dist;
+            }
+        }
+        return best;
     }
 
     // 사람이동
@@ -200,8 +191,7 @@ public class Main {
     }
     static class Obj {
         int x, y;
-        int status; // 인간 :  출발전 -1, 이동중 0, 도착 1 / 건물 : 공터 0, 폐쇄 1
-
+        int status; // 인간 :  출발전 -1, 이동중 0, 도착 1
         public Obj(int x, int y, int status) {
             this.x = x;
             this.y = y;
