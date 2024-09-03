@@ -16,7 +16,7 @@ public class Main {
     static int[] dx ={-1, 0, 0, 1}; // 상 좌 우 하
     static int[] dy = {0, -1, 1, 0};
     static boolean[][] visit;
-    //static int[][] arr;
+    static int[][] arr;
     static Obj[] people;
     static List<Obj> camps = new ArrayList<>();
     static Obj[] convenis;
@@ -26,8 +26,9 @@ public class Main {
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
-        //arr = new int[N][N];
         visit = new boolean[N][N];
+        arr = new int[N][N];
+
         people = new Obj[M + 1];
         convenis = new Obj[M + 1]; 
 
@@ -35,6 +36,7 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             for(int j = 0; j < N; j++) {
                 int num = Integer.parseInt(st.nextToken());
+                arr[i][j] = num;
                 if(num == 1) {
                     camps.add(new Obj(i, j, 0));
                 }
@@ -77,6 +79,7 @@ public class Main {
                 Obj cur = temp.poll();
                 visit[cur.x][cur.y] = true;
                 cur.status = 1;
+                
             }
         }
         System.out.println(time);
@@ -112,7 +115,7 @@ public class Main {
 
         while(!queue.isEmpty()) {
             Point cur = queue.poll();
-
+            if(arr[cur.x][cur.y] == 1) break;
             for(int d = 0; d < 4; d++) {
                 int nx = cur.x + dx[d];
                 int ny = cur.y + dy[d];
@@ -179,7 +182,6 @@ public class Main {
         human.x = cur.x;
         human.y = cur.y;
     }
-    
 
     // 모든 사람 도착
     public static boolean allArrived() {
