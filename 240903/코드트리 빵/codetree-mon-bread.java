@@ -17,29 +17,25 @@ public class Main {
     static int[] dy = {0, -1, 1, 0};
     static boolean[][] visit;
     static int[][] arr;
-    static Obj[] people;
-    static List<Obj> camps = new ArrayList<>();
-    static Obj[] convenis;
-    static Queue<Obj> temp = new ArrayDeque<>(); // 임시 좌표 -> 다음 턴 이동 불가능한 곳 담는 큐
+    static Human[] people;
+    static Point[] convenis;
+    static Queue<Point> temp = new ArrayDeque<>(); // 임시 좌표 -> 다음 턴 이동 불가능한 곳 담는 큐
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
+        
         visit = new boolean[N][N];
         arr = new int[N][N];
-
-        people = new Obj[M + 1];
-        convenis = new Obj[M + 1]; 
+        people = new Human[M + 1];
+        convenis = new Point[M + 1]; 
 
         for(int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             for(int j = 0; j < N; j++) {
-                int num = Integer.parseInt(st.nextToken());
-                arr[i][j] = num;
-                if(num == 1) {
-                    camps.add(new Obj(i, j, 0));
-                }
+                arr[i][j] = Integer.parseInt(st.nextToken());
             }
         }
         // 편의점, 사람 생성
@@ -47,8 +43,8 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             int x = Integer.parseInt(st.nextToken()) - 1;
             int y = Integer.parseInt(st.nextToken()) - 1;
-            convenis[m] = new Obj(x, y, 0);
-            people[m] = new Obj(-1, -1, -1);
+            convenis[m] = new Point(x, y);
+            people[m] = new Human(-1, -1, -1);
         }
 
         int time = 0;
@@ -56,13 +52,14 @@ public class Main {
         while(true) {
             time++;
             temp.clear();
+            // System.out.println(time + "turn----------------");
             // 사람이동
             for(int i = 1; i <= M; i++) {
                 if(i > time) break;
-                Obj human = people[i];
+                Human human = people[i];
                 if(human.status == -1) {  // 출발 전
                     // 베이스 캠프로 이동
-                    Obj camp = findBaseCamp(convenis[i]);
+                    Point camp = findBaseCamp(convenis[i]);
                     temp.add(camp);
                     human.status = 0;
                     human.x = camp.x;
@@ -70,12 +67,13 @@ public class Main {
                 } else if(human.status == 0) { // 이동 중
                     move(i);
                 } else continue; // 이미 편의점 도착
+                // System.out.println("human" + i + " : " + human.x + " " + human.y);
             }
 
             if(allArrived()) break; // 모든 사람 도착
             // 이동 불가로 변경
             while(!temp.isEmpty()) {
-                Obj cur = temp.poll();
+                Point cur = temp.poll();
                 visit[cur.x][cur.y] = true;                
             }
         }
@@ -83,7 +81,7 @@ public class Main {
     }
 
     // 내가 가려는 편의점과 가장 가까운 베이스 캠프 찾기
-    public static Obj findBaseCamp(Obj conveni) {
+    public static Point findBaseCamp(Point conveni) {
         int[][] map = new int[N][N];
         for(int i = 0; i < N; i++) {
             Arrays.fill(map[i], Integer.MAX_VALUE);
@@ -91,6 +89,7 @@ public class Main {
         map[conveni.x][conveni.y] = 0;
 
         Queue<Point> queue = new ArrayDeque<>();
+        List<Point> camps = new ArrayList<>();
         queue.add(new Point(conveni.x, conveni.y));
 
         while(!queue.isEmpty()) {
@@ -102,36 +101,32 @@ public class Main {
                 if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
                 if(visit[nx][ny]) continue;
                 if(map[nx][ny] < map[cur.x][cur.y] + 1) continue;
-
+                if(arr[nx][ny] == 1) camps.add(new Point(nx, ny));
                 map[nx][ny] = map[cur.x][cur.y] + 1;
                 queue.add(new Point(nx, ny));
             }
         }
-
-        Obj best = null;
+        //printArr(map);
+        Point best = null;
         int min = Integer.MAX_VALUE;
-        for(Obj camp : camps) {
-            if(visit[camp.x][camp.y]) continue;
-            int dist = map[camp.x][camp.y];
-            if(min > dist) {
-                best = camp;
-                min = dist;
+        for(Point camp : camps) {
+            if(best == null) best = camp;
+            else if(map[best.x][best.y] >= map[camp.x][camp.y]){
+                best = best.isBest(camp);
             }
         }
         return best;
     }
 
-    // 사람이동
-    public static void move(int idx) {
+    // 이동 경로 생성
+    public static Stack<Point> newWay(int idx) {
         int[][] map = new int[N][N];
         for(int i = 0; i < N; i++) Arrays.fill(map[i], Integer.MAX_VALUE);
-        Obj human = people[idx];
-        Obj conveni = convenis[idx];
+        Human human = people[idx];
+        Point conveni = convenis[idx];
         map[human.x][human.y] = 0;
-
         Queue<Point> queue = new ArrayDeque<>();
         queue.add(new Point(human.x, human.y));
-
         while(!queue.isEmpty()) {
             Point cur = queue.poll();
             if(cur.x == conveni.x && cur.y == conveni.y) break; // 해당 편의점 발견
@@ -148,30 +143,51 @@ public class Main {
             }
         }
         int dist = map[conveni.x][conveni.y];
-        // 만약 거리가 1이라면 편의점 도착
-        if(dist == 1) {
-            human.x = conveni.x;
-            human.y = conveni.y;
-            human.status = 1;
-            temp.add(conveni);
-            return;
-        } 
 
         // 이동
-        Point cur = new Point(convenis[idx].x, convenis[idx].y);        
+        Stack<Point> way = new Stack<>();
+        way.push(new Point(convenis[idx].x, convenis[idx].y));
+        Point cur = new Point(convenis[idx].x, convenis[idx].y);
+             
         for(int d = 0; d < 4; d++) {
             int nx = cur.x + dx[d];
             int ny = cur.y + dy[d];
             if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
             if(map[nx][ny] == dist - 1) {
-                if(nx == human.x && ny == human.y) break;
+                if(map[nx][ny] == 0) break;
                 cur = new Point(nx, ny);
+                way.push(new Point(nx, ny));
                 dist--;
                 d = -1;
             }
         }
-        human.x = cur.x;
-        human.y = cur.y;
+        // System.out.print(idx +" : ");
+        // for(Point next : way) {
+        //     System.out.print(next.x + " " + next.y + "->");
+        // }
+        // System.out.println();
+        return way;
+    }
+
+    // 사람이동
+    public static void move(int idx) {
+        Human human = people[idx];
+        if(human.way == null || !isSafeWay(human.way)) {
+            human.way = newWay(idx);
+        }
+        Point next = human.way.pop();
+        human.x = next.x;
+        human.y = next.y;
+        if(next.x == convenis[idx].x && next.y == convenis[idx].y) { // 다음 경로가 편의점
+            human.status = 1;
+            temp.add(next);
+        }
+    }
+    public static boolean isSafeWay(Stack<Point> way) {
+        for(Point next : way) {
+            if(visit[next.x][next.y]) return false; // 가려는 경로에 길이 막혔다면            
+        }
+        return true;
     }
 
     // 모든 사람 도착
@@ -182,20 +198,40 @@ public class Main {
         return true;
     }
 
+    public static void printArr(int[][] arr) {
+        System.out.println();
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < N; j++) {
+                if(arr[i][j] == Integer.MAX_VALUE) System.out.print("INF" + "\t");
+                else System.out.print(arr[i][j] + "\t");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
+
     static class Point {
         int x, y;
         public Point(int x, int y) {
             this.x = x;
             this.y = y;
         }
+
+        public Point isBest(Point o) {
+            if(this.x == o.x) return this.y < o.y ? this : o;
+            return this.x < o.x ? this : o;
+        }
     }
-    static class Obj {
+    static class Human {
         int x, y;
-        int status; // 인간 :  출발전 -1, 이동중 0, 도착 1
-        public Obj(int x, int y, int status) {
+        int status; // 출발전 -1, 이동중 0, 도착 1
+        Stack<Point> way;
+
+        public Human(int x, int y, int status) {
             this.x = x;
             this.y = y;
             this.status = status;
         }
+
     }
 }
