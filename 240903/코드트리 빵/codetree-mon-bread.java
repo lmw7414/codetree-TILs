@@ -51,33 +51,37 @@ public class Main {
 
         while(true) {
             time++;
-            temp.clear();
             // System.out.println(time + "turn----------------");
-            // 사람이동
+            // 1. 격자 안 사람이동
             for(int i = 1; i <= M; i++) {
-                if(i > time) break;
                 Human human = people[i];
-                if(human.status == -1) {  // 출발 전
-                    // 베이스 캠프로 이동
-                    Point camp = findBaseCamp(convenis[i]);
-                    temp.add(camp);
-                    human.status = 0;
-                    human.x = camp.x;
-                    human.y = camp.y;
-                } else if(human.status == 0) { // 이동 중
+                if(human.status == 0) { // 이동 중
                     move(i);
-                } else continue; // 이미 편의점 도착
+                }
                 // System.out.println("human" + i + " : " + human.x + " " + human.y);
             }
 
-            if(allArrived()) break; // 모든 사람 도착
+
+            //2. 격자 밖 사람 이동
+            if(time <= M) {
+                // 베이스 캠프로 이동
+                Human human = people[time];
+                Point camp = findBaseCamp(convenis[time]);
+                temp.add(camp);
+                human.status = 0;
+                human.x = camp.x;
+                human.y = camp.y;
+                move(time);
+            }
+            
             // 이동 불가로 변경
             while(!temp.isEmpty()) {
                 Point cur = temp.poll();
                 visit[cur.x][cur.y] = true;                
             }
+            if(allArrived()) break; // 모든 사람 도착
         }
-        System.out.println(time);
+        System.out.println(time + 1);
     }
 
     // 내가 가려는 편의점과 가장 가까운 베이스 캠프 찾기
@@ -94,7 +98,7 @@ public class Main {
 
         while(!queue.isEmpty()) {
             Point cur = queue.poll();
-            //if(arr[cur.x][cur.y] == 1) break;
+            if(arr[cur.x][cur.y] == 1) break;
             for(int d = 0; d < 4; d++) {
                 int nx = cur.x + dx[d];
                 int ny = cur.y + dy[d];
@@ -106,9 +110,8 @@ public class Main {
                 queue.add(new Point(nx, ny));
             }
         }
-        //printArr(map);
+        // printArr(map);
         Point best = null;
-        int min = Integer.MAX_VALUE;
         for(Point camp : camps) {
             if(best == null) best = camp;
             else if(map[best.x][best.y] >= map[camp.x][camp.y]){
