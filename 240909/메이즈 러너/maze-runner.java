@@ -52,12 +52,18 @@ public class Main {
         int y = Integer.parseInt(st.nextToken()) - 1;
         exit = new Point(x, y);
 
+        for(Point human : people) {
+            if(human.x == exit.x && human.y == exit.y) {
+                human.end();
+                exitCnt++;
+            }
+        }
 
         // 탈출 조건
         // 1. 모든 참가자 전원 탈출 or 시간 초과
         // 모든 참가자들의 이동 거리 합과 출구 좌표
         for (int k = 0; k < K; k++) {
-            
+
             // 참가자 전원 이동
             move();
             if (exitCnt == M) break; // 전원 탈출
@@ -81,6 +87,7 @@ public class Main {
             if (human.isFinish()) continue; // 이미 도착한 사람
             // 1. 최단 거리 이동
             int d = getDir(human, exit);
+            if(d == -1) continue;
             int nx = human.x + dx[d];
             int ny = human.y + dy[d];
             if (outOfRange(nx, ny)) continue;
@@ -98,22 +105,29 @@ public class Main {
 
     //
     public static int getDir(Point human, Point exit) {
-
-        int bestD = 0;
         int[] dx = {-1, 1, 0, 0};
         int[] dy = {0, 0, -1, 1};
         int max = 100;
-        for(int d = 3; d >= 0; d--) {
+
+        for(int d = 0; d< 4; d++) {
+            int nx = human.x + dx[d];
+            int ny = human.y + dy[d];
+            if (outOfRange(nx, ny)) continue;
+            int dist = getDist(new Point(nx, ny), exit);
+            if(dist > max) continue;
+            max = dist;
+        }
+
+        for(int d = 0; d < 4; d++) {
             int nx = human.x + dx[d];
             int ny = human.y + dy[d];
             if (outOfRange(nx, ny)) continue;
             if(arr[nx][ny] > 0) continue;
             int dist = getDist(new Point(nx, ny), exit);
-            if(dist > max) continue;
-            max = dist;
-            bestD = d;
+            if(dist <= max) return d;
+
         }
-        return bestD;
+        return -1;
 //        if (x < exit.x) return 1; // 하로 이동
 //        else if (x > exit.x) return 0; // 상으로 이동
 //        else {
@@ -142,17 +156,18 @@ public class Main {
             included.add(human);
         }
         included.add(exit);
+        boolean[] check = new boolean[included.size()];
         // 90도 회전
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 arr[r + j][c + size - i - 1] = temp[i][j];
-                for (Point p : included) {
-                    //if(p == null) continue;
+                for (int idx = 0; idx < included.size(); idx++) {
+                    if(check[idx]) continue;
+                    Point p = included.get(idx);
                     if (p.x == r + i && p.y == c + j) {
                         p.x = r + j;
                         p.y = c + size - i - 1;
-                        included.remove(p);
-                        break;
+                        check[idx] = true;
                     }
                 }
             }
@@ -224,6 +239,7 @@ public class Main {
         for (int i = exit.x - dist; i < N - dist; i++) {
             for (int j = exit.y - dist; j < N - dist; j++) {
                 if (outOfRange(i, j)) continue;
+                if(!isInside(exit, i, j, dist + 1)) continue;
                 for (int x = i; x <= i + dist; x++) {
                     for (int y = j; y <= j + dist; y++) {
                         if (visit[x][y] < 0) {
