@@ -65,9 +65,9 @@ public class Main {
             if(square == null) break;
             // 미로 회전
 
-            System.out.println(square[0] + " " + square[1] + " " + square[2]);
+            // System.out.println(square[0] + " " + square[1] + " " + square[2]);
             rotate(square[0], square[1], square[2]);
-            printArr();
+            // printArr();
         }
         System.out.println(answer);
         System.out.println((exit.x + 1) + " " + (exit.y + 1));
