@@ -57,9 +57,10 @@ public class Main {
         // 1. 모든 참가자 전원 탈출 or 시간 초과
         // 모든 참가자들의 이동 거리 합과 출구 좌표
         for (int k = 0; k < K; k++) {
-            if (exitCnt == M) break; // 전원 탈출
+            
             // 참가자 전원 이동
             move();
+            if (exitCnt == M) break; // 전원 탈출
             // 가장 작은 정사각형 찾기
             int[] square = find();
             if(square == null) break;
@@ -102,12 +103,13 @@ public class Main {
         int[] dx = {-1, 1, 0, 0};
         int[] dy = {0, 0, -1, 1};
         int max = 100;
-        for(int d = 0; d < 4; d++) {
+        for(int d = 3; d >= 0; d--) {
             int nx = human.x + dx[d];
             int ny = human.y + dy[d];
             if (outOfRange(nx, ny)) continue;
+            if(arr[nx][ny] > 0) continue;
             int dist = getDist(new Point(nx, ny), exit);
-            if(dist >= max) continue;
+            if(dist > max) continue;
             max = dist;
             bestD = d;
         }
