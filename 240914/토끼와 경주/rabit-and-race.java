@@ -123,7 +123,7 @@ public class Main {
     }
 
     // 사방 탐색 (행번호 + 열번호가 큰 칸 > 행번호가 큰 칸 > 열번호가 큰칸)
-    public static Pos bestPos(int x, int y, int d) {
+    public static Pos bestPos(int x, int y, long d) {
         Pos best = null;
         int size = 0;
         int width = 0;
@@ -132,7 +132,7 @@ public class Main {
             else width = M;
             size = (width - 1) * 2;
 
-            int nd = d % size;
+            int nd = (int) (d % size);
             Pos p = null;
             if (i % 2 == 0) {
                 if (x + nd < width) {
@@ -179,7 +179,7 @@ public class Main {
 
     // 400 최고의 토끼 선정
     public static void printResult() {
-        int answer = 0;
+        long answer = 0;
         for (Rabbit r : rabbits) {
             answer = Math.max(answer, r.score);
         }
@@ -189,9 +189,9 @@ public class Main {
     static class Rabbit {
         int id;
         int x, y;
-        int dist;
+        long dist;
         int count;
-        int score;
+        long score;
 
         public Rabbit(int id, int dist) {
             this.id = id;
