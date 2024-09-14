@@ -72,7 +72,7 @@ public class Main {
         hm.put(id, rabbit);
         rabbits.add(rabbit);
     }
-
+    static  int idx = 1;
     // 200 경주 진행
     public static void play(int K, int S) {
         Set<Rabbit> choosed = new HashSet<>();
@@ -129,44 +129,34 @@ public class Main {
             else width = M;
             size = (width - 1) * 2;
             int nd = (int) (d % size); // 현재위치에서 이동해할 거리
-            int curX = x;
-            int curY = y;
+            int cur = i % 2 == 0 ? x : y;
             Pos p = null;
-
             int ni = i;
-            while (true) {
-                if (nd > width - 1) {
-                    if (ni % 2 == 0) {
-                        if (ni == 0) {
-                            nd -= x - 1;
-                            curX = 1;
-                        } else {
-                            nd -= width - x;
-                            curX = width;
-                        }
-                        ni = (ni + 2) % 4;
-                        continue;
-                    } else {
-                        if (ni == 1) {
-                            nd -= width - y;
-                            curY = width;
-                        } else {
-                            nd -= y - 1;
-                            curY = 1;
-                        }
-                        ni = (ni + 2) % 4;
-                        continue;
-                    }
+            if(cur == 1 && (ni == 0 || ni == 3))
+                ni = (ni + 2) % 4;
+            else if(cur == width && (ni == 1 || ni == 2))
+                ni = (ni + 2) % 4;
+
+            if(ni == 1 || ni == 2) {
+                if(cur + nd > width) {
+                    nd -= width - cur;
+                    cur = width;
+                    cur -= nd;
+                    if(cur < 1) cur = 1 + (1 - cur);
+                } else {
+                    cur += nd;
                 }
-                int nx = curX + dx[ni] * nd;
-                int ny = curY + dy[ni] * nd;
-                if (nx <= 0 || ny <= 0 || nx > N || ny > M) {
-                    ni = (ni + 2) % 4;
-                    continue;
+            } else {
+                if(cur - nd < 1) {
+                    nd -= cur - 1;
+                    cur = 1;
+                    cur += nd;
+                    if(cur > width) cur = width - (cur - width);
+                } else {
+                    cur -= nd;
                 }
-                p = new Pos(nx, ny);
-                break;
             }
+            p = i % 2 == 0 ? new Pos(cur, y) : new Pos(x, cur);
             best = isBetterPos(best, p);
         }
         return best;
