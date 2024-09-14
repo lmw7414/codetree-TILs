@@ -22,8 +22,6 @@ import java.io.*;
 public class Main {
     static int Q;
     static int N, M, P, L;
-    static int[] dx = {-1, 0, 1, 0}; // 상 우 하 좌
-    static int[] dy = {0, 1, 0, -1};
     static Map<Integer, Rabbit> hm = new HashMap<>();
     static PriorityQueue<Rabbit> rabbits = new PriorityQueue<>((a, b) -> {
         if (a.count != b.count) return a.count - b.count;
@@ -72,7 +70,6 @@ public class Main {
         hm.put(id, rabbit);
         rabbits.add(rabbit);
     }
-    static  int idx = 1;
     // 200 경주 진행
     public static void play(int K, int S) {
         Set<Rabbit> choosed = new HashSet<>();
@@ -84,7 +81,10 @@ public class Main {
             rabbit.y = next.y;
             int score = next.x + next.y;
 
-            for (Rabbit r : rabbits) r.score += score;
+            for (Rabbit r : rabbits) {
+                // System.out.printf("%d에게 %d + %d = %d 점 추가\n", r.id, rabbit.x, rabbit.y, score);
+                r.score += score;
+            }
             rabbits.add(rabbit);
             choosed.add(rabbit);
         }
@@ -94,12 +94,16 @@ public class Main {
             best = bestRabbit(best, r);
         }
         best.score += S;
+        // System.out.printf("%d에게 S : %d점 추가\n", best.id, S);
+        // System.out.println("--------");
+        // for(Rabbit s : rabbits) System.out.printf("id : %d  score : %d\n", s.id, s.score);
     }
 
-    //(행번호 + 열번호가 큰 칸 > 행번호가 큰 칸 > 열번호가 큰칸 > 고유번호가 큰 토끼)에서 높은 우선순위의 토끼를 골라 점수 S를 더해줌
+    //(행번호 + 열번호가 큰 토끼 > 행번호가 큰 토끼 > 열번호가 큰 토끼 > 고유번호가 큰 토끼)에서 높은 우선순위의 토끼를 골라 점수 S를 더해줌
     public static Rabbit bestRabbit(Rabbit best, Rabbit r) {
         if (best == null) return r;
-        if (best.x + best.y != r.x + r.y) {
+
+        if (best.x + best.y == r.x + r.y) {
             if (best.x == r.x) {
                 if (best.y == r.y) {
                     if (best.id > r.id) return best;
@@ -181,8 +185,8 @@ public class Main {
     // 400 최고의 토끼 선정
     public static void printResult() {
         long answer = 0;
-        for (Rabbit r : rabbits) {
-            answer = Math.max(answer, r.score);
+        while(!rabbits.isEmpty()) {
+            answer = Math.max(answer, rabbits.poll().score);
         }
         System.out.println(answer);
     }
