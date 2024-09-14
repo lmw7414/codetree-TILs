@@ -80,6 +80,7 @@ public class Main {
 
     // 200 경주 진행
     public static void play(int K, int S) {
+        List<Rabbit> choosed = new ArrayList<>();
         for (int k = 0; k < K; k++) {
             Rabbit rabbit = rabbits.poll();
             rabbit.count += 1;
@@ -90,10 +91,11 @@ public class Main {
 
             for (Rabbit r : rabbits) r.score += score;
             rabbits.add(rabbit);
+            choosed.add(rabbit);
         }
 
         Rabbit best = null;
-        for (Rabbit r : rabbits) {
+        for (Rabbit r : choosed) {
             best = bestRabbit(best, r);
         }
         best.score += S;
@@ -181,6 +183,7 @@ public class Main {
     public static void printResult() {
         long answer = 0;
         for (Rabbit r : rabbits) {
+
             answer = Math.max(answer, r.score);
         }
         System.out.println(answer);
