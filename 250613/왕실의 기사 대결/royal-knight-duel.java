@@ -67,6 +67,7 @@ public class Main {
         int answer = 0;
         for(int i = 1; i  <= N; i++) {
             Knight knight = knights[i];
+            //System.out.print(knight);
             if(knight.isDead) continue;
             answer += knight.damage;
         }
@@ -144,6 +145,7 @@ public class Main {
             for(int next : set) {
                 move(next, dir, false);
             }
+            move(id, dir, true);
         }
     }
 
@@ -155,57 +157,6 @@ public class Main {
             System.out.println();
         }
     }
-
-
-    // public static boolean move(int id, int dir, boolean ordered) {
-    //     List<Point> pos = getKnightPos(knights[id]);
-    //     Set<Integer> set = new HashSet<>();
-    //     for(Point p : pos) {
-    //         int nx = p.x + dx[dir];
-    //         int ny = p.y + dy[dir];
-    //         if(OOB(nx, ny)) return false; // 움직일 수 없음
-    //         if(map[nx][ny] != 0 && map[nx][ny] != id) { // 나 자신이 아니고, 0이 아닌 다른 기사라면
-    //             set.add(map[nx][ny]);
-    //         }
-    //     }
-    //     if(set.isEmpty()) { // 움직일 수 있는 경우
-    //         // 현재의 배열 0으로 변경
-    //         for(Point p : pos) map[p.x][p.y] = 0;
-    //         // 함정이 있는지 체크
-    //         int cnt = 0;
-    //         for(Point p : pos) {
-    //             int nx = p.x + dx[dir];
-    //             int ny = p.y + dy[dir];
-    //             if(arr[nx][ny] == 1) cnt++;
-    //         }
-    //         Knight target = knights[id];
-    //         target.r = pos.get(0).x + dx[dir];
-    //         target.c = pos.get(0).y + dy[dir];
-    //         if(!ordered) {
-    //             if(target.k <= cnt) { // 충격에 사망하는 경우
-    //                 target.k -= cnt;
-    //                 target.isDead = true;
-    //                 return true;
-    //             } else {
-    //                 target.k -= cnt;
-    //                 target.damage += cnt; // 대미지 누적
-    //             }
-    //         }
-    //         for(Point p : pos) {
-    //             int nx = p.x + dx[dir];
-    //             int ny = p.y + dy[dir];
-    //             map[nx][ny] = id;
-    //         }
-    //         System.out.printf("%d 이동, 피해: %d\n", id, cnt);
-    //         return true;
-    //     } else { // 다음 기사가 존재하는 경우
-    //         for(int next : set) {
-    //             move(next, dir, false);
-    //             if(!isMove) return false; // 움직일 수 없다면
-    //         }
-    //         return true;
-    //     }
-    // }
 
     public static List<Point> getKnightPos(Knight knight) {
         List<Point> pos = new ArrayList<>();
@@ -243,6 +194,11 @@ public class Main {
             this.k = k;
             damage = 0;
             isDead = false;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[id: %d, r: %d, c: %d, k: %d, damage: %d, isDead: %s]\n", id, r, c, k, damage, isDead);
         }
     }
 }
