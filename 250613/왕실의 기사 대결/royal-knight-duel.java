@@ -2,27 +2,11 @@
 import java.util.*;
 import java.io.*;
 
-/*
-왕실의 기사는 (r,c)를 기준으로 (r+h, c+w)까지의 직사각형 형태를 띄고 있음
-각 기사의 체력은 K로 주어짐
-1. 기사 이동
- - 왕에게 명령을 받은 기사는 상하좌우 중 하나로 한 칸 이동 가능
- - 만양 이동하려는 위치에 다른 기사가 있다면 그 기사도 연쇄적으로 한칸 밀려남
- - 마지막 기사부터 이동 시켜야하고, 마지막 기사마저 움직일 수 없다면 모두 움직일 수 없음
- - 체스판에 사라진 기사는 명령할 수 없음
-2. 대결 대미지
- - 명령을 받은 기사가 다른 기사를 밀치게 되면, 밀려난 기사들은 피해를 입게 됨.
- - 해당 기사가 이동한 곳에서 w X h 직사각형 내에 놓여 있는 함정의 수만큼만 피해를 입음
- - 체력 이상의 피해를 받으면 사라짐
- - 명령을 받는 기사는 피해를 입지 않음
- - 기사들은 모두 밀린 이후에 대미지를 입게 됨
- - 밀렸더라도 밀쳐지 위치에 함정이 전혀 없다면 그 기사는 피해를 전혀 입지 않게 됨
-*/
-
 public class Main {
     static int L, N, Q;
     static int[][] arr, map;
     static Knight[] knights;
+    static int[] damage;
     static int[] dx = {-1, 0, 1, 0}; // 상우하좌
     static int[] dy = {0, 1, 0, -1};
 
@@ -41,6 +25,7 @@ public class Main {
             }
         }
         knights = new Knight[N + 1];
+        damage = new int[N + 1]; // 누적 대미지 기록
         for(int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
             int r, c, h, w, k;
@@ -58,18 +43,28 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             int id = Integer.parseInt(st.nextToken());
             int dir = Integer.parseInt(st.nextToken());
-            if(knights[id].isDead) continue; // 이미 죽은 기사라면 무시
+            if(knights[id].isDead == 2) continue; // 이미 죽은 기사라면 무시
             if(isMove(id, dir)) {
                 move(id, dir, true);
-                //printArr();
+                for(int i = 1; i <= N; i++) {
+                    if(knights[i].isDead == 1) {
+                        List<Point> pos = getKnightPos(knights[i]);
+                        for(Point p : pos) map[p.x][p.y] = 0;
+                        knights[i].isDead = 2;
+                    } else if(knights[i].isDead == 0) {
+                        knights[i].k -= knights[i].damage;
+                    }
+                    knights[i].damage = 0;
+                }
             }
+            //printArr();
         }
         int answer = 0;
         for(int i = 1; i  <= N; i++) {
             Knight knight = knights[i];
             //System.out.print(knight);
-            if(knight.isDead) continue;
-            answer += knight.damage;
+            if(knight.isDead == 2) continue;
+            answer += damage[i];
         }
         System.out.println(answer);
     }
@@ -86,19 +81,14 @@ public class Main {
                 set.add(map[nx][ny]);
             }
         }
-        if(set.isEmpty()) { // 움직일 수 있는 경우
-            return true;
-        } else { // 다음 기사가 존재하는 경우
-            // System.out.print(id + " 다음 존재 ");
-            // for(int next : set) System.out.print(next + ", ");
-            // System.out.println();
+        if(!set.isEmpty()) {
             boolean flag = true;
             for(int next : set) {
                 flag = isMove(next, dir);
                 if(!flag) return false; // 움직일 수 없다면
             }
-            return true;
         }
+        return true;
     }
 
     public static void move(int id, int dir, boolean ordered) {
@@ -112,42 +102,38 @@ public class Main {
                 set.add(map[nx][ny]);
             }
         }
-        if(set.isEmpty()) { // 움직일 수 있는 경우
-            // 현재의 배열 0으로 변경
-            for(Point p : pos) map[p.x][p.y] = 0;
-            // 함정이 있는지 체크
-            int cnt = 0;
-            for(Point p : pos) {
-                int nx = p.x + dx[dir];
-                int ny = p.y + dy[dir];
-                if(arr[nx][ny] == 1) cnt++;
-            }
-            Knight target = knights[id];
-            target.r = pos.get(0).x + dx[dir];
-            target.c = pos.get(0).y + dy[dir];
-            if(!ordered) {
-                if(target.k <= cnt) { // 충격에 사망하는 경우
-                    target.k -= cnt;
-                    target.isDead = true;
-                    return;
-                } else {
-                    target.k -= cnt;
-                    target.damage += cnt; // 대미지 누적
-                }
-            }
-            for(Point p : pos) {
-                int nx = p.x + dx[dir];
-                int ny = p.y + dy[dir];
-                map[nx][ny] = id;
-            }
-            //System.out.printf("%d 이동, 피해: %d\n", id, cnt);
-        } else { // 다음 기사가 존재하는 경우
+        if(!set.isEmpty()) { // 움직일 수 있는 경우
             for(int next : set) {
                 move(next, dir, false);
             }
-            move(id, dir, true);
+        }
+        
+        for(Point p : pos) map[p.x][p.y] = 0; // 현재의 배열 0으로 변경
+        // 함정이 있는지 체크
+        int cnt = 0;
+        for(Point p : pos) {
+            int nx = p.x + dx[dir];
+            int ny = p.y + dy[dir];
+            if(arr[nx][ny] == 1) cnt++;
+        }
+        // 기사 위치 최신화
+        Knight target = knights[id];
+        target.r += dx[dir];
+        target.c += dy[dir];
+        if(!ordered) { // 명령 받은 기사가 아닌 경우
+            damage[id] += cnt;
+            target.damage = cnt;
+            if(target.k <= cnt) { // 충격에 사망하는 경우
+                target.isDead = 1;
+            }
+        }
+        for(Point p : pos) {
+            int nx = p.x + dx[dir];
+            int ny = p.y + dy[dir];
+            map[nx][ny] = id;
         }
     }
+
 
     public static void printArr() {
         for(int i = 1; i <= L; i++) {
@@ -156,6 +142,7 @@ public class Main {
             }
             System.out.println();
         }
+        System.out.println();
     }
 
     public static List<Point> getKnightPos(Knight knight) {
@@ -184,7 +171,7 @@ public class Main {
         int id;
         int r, c, h, w, k;
         int damage;
-        boolean isDead;
+        int isDead; // 0 생존 1 이제 죽을 예정 // 2 죽음
         public Knight(int id, int r, int c, int h, int w, int k) {
             this.id = id;
             this.r = r;
@@ -193,7 +180,7 @@ public class Main {
             this.w = w;
             this.k = k;
             damage = 0;
-            isDead = false;
+            isDead = 0;
         }
 
         @Override
